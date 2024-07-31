@@ -1,12 +1,34 @@
-/* Grid layout for videos */
-#video-grid {
+/* Centering the heading */
+h1 {
+    text-align: center;
+    margin-top: 20px;
+  }
+  
+  /* Container for video and chat sections */
+  .main-container {
+    display: flex;
+    height: 100vh;
+  }
+  
+  /* Video container styling */
+  .video-container-wrapper {
+    flex: 1;
+    padding: 10px;
+    background-color: #f0f0f0;
+  }
+  
+  /* Chat container styling */
+  .chat-container-wrapper {
+    flex: 0 0 30%;
+  }
+  
+  /* Grid layout for videos */
+  #video-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Responsive grid */
     gap: 10px; /* Gap between videos */
     justify-content: center;
     margin-top: 20px;
-    /* Adjust the height to ensure it fits well alongside the chat section */
-    padding-right: 30%; /* Leave space for the chat section */
   }
   
   /* Video container styling */
@@ -56,20 +78,61 @@
     flex-direction: column;
     padding: 10px;
     box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
+    overflow: hidden; /* Prevents overflow from causing scrollbars */
   }
   
+  /* Chat messages container */
   #chat-messages {
     flex: 1;
     overflow-y: auto;
     margin-bottom: 10px;
   }
   
+  /* Chat input container styling */
   #chat-input-container {
     display: flex;
+    align-items: center;
+    border-top: 1px solid #ddd;
+    padding-top: 10px;
   }
   
+  /* Chat input styling */
   #chatInput {
     flex: 1;
-    margin-right: 10px;
+    padding: 5px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+  }
+  
+  /* Send button styling */
+  #sendButton {
+    margin-left: 10px;
+    padding: 5px 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  #sendButton:hover {
+    background-color: #0056b3;
+  }
+  
+  /* Responsive design for input fields */
+  .form-group {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+  }
+  
+  .form-group input {
+    max-width: calc(90% / 2 - 10px); /* Combined width of both inputs (70%) minus margin */
+    margin-right: 10px; /* Space between inputs */
+    margin-top: 30px;
+  }
+  
+  .form-group input:last-child {
+    margin-right: 0; /* No margin on the last input */
   }
   

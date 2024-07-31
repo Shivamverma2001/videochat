@@ -6,57 +6,33 @@
   <title>Video Chat Application</title>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
   <link rel="stylesheet" href="style.css"> <!-- Link to external CSS -->
-  <style>
-    /* Chat section styling */
-    #chat-section {
-      position: fixed;
-      right: 0;
-      top: 0;
-      width: 30%;
-      height: 100%;
-      background-color: #f8f9fa;
-      border-left: 1px solid #ddd;
-      display: flex;
-      flex-direction: column;
-      padding: 10px;
-    }
-
-    #chat-messages {
-      flex: 1;
-      overflow-y: auto;
-      margin-bottom: 10px;
-    }
-
-    #chat-input-container {
-      display: flex;
-    }
-
-    #chatInput {
-      flex: 1;
-      margin-right: 10px;
-    }
-  </style>
 </head>
 <body>
-  <div class="container">
-    <h1 class="mt-5">Video Chat Application</h1>
-    <div class="form-group mt-3">
-      <input type="text" id="usernameInput" class="form-control" placeholder="Enter your username">
-      <input type="text" id="roomInput" class="form-control mt-2" placeholder="Enter room name">
-      <button id="startRoomButton" class="btn btn-primary mt-2">Start Room</button>
-      <button id="joinRoomButton" class="btn btn-secondary mt-2">Join Room</button>
-      <button id="disconnectButton" class="btn btn-danger mt-2" style="display:none;">End Call</button>
+  <div class="main-container">
+    <div class="video-container-wrapper">
+    <h1>Video Chat Application</h1>
+      <div class="container">
+        <div class="form-group mt-3">
+          <input type="text" id="usernameInput" class="form-control" placeholder="Enter your username">
+          <input type="text" id="roomInput" class="form-control" placeholder="Enter room name">
+        </div>
+        <button id="startRoomButton" class="btn btn-primary mt-2">Start Room</button>
+        <button id="joinRoomButton" class="btn btn-secondary mt-2">Join Room</button>
+        <button id="disconnectButton" class="btn btn-danger mt-2" style="display:none;">End Call</button>
+        <div id="roomIdDisplay"></div>
+        <div id="userIdDisplay"></div>
+        <div id="video-grid"></div>
+      </div>
     </div>
-    <div id="roomIdDisplay"></div>
-    <div id="userIdDisplay"></div>
-    <div id="video-grid"></div>
-  </div>
 
-  <div id="chat-section">
-    <div id="chat-messages"></div>
-    <div id="chat-input-container">
-      <input type="text" id="chatInput" class="form-control" placeholder="Type a message">
-      <button id="sendButton" class="btn btn-primary ml-2">Send</button>
+    <div class="chat-container-wrapper">
+      <div id="chat-section">
+        <div id="chat-messages"></div>
+        <div id="chat-input-container">
+          <input type="text" id="chatInput" class="form-control" placeholder="Type a message">
+          <button id="sendButton" class="btn btn-primary">Send</button>
+        </div>
+      </div>
     </div>
   </div>
 
