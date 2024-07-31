@@ -6,12 +6,14 @@ const peer = new Peer(undefined, {
 });
 
 let localStream;
+let screenStream;
 let myPeerId;
 let myUsername;
 let currentRoom;
 let isRoomCreator = false;
 let isCameraOn = true; // Track camera state
 let isMicOn = true; // Track mic state
+let isScreenSharing = false; // Track screen sharing state
 
 // Elements
 const usernameInput = document.getElementById('usernameInput');
@@ -30,6 +32,8 @@ const cameraToggleButton = document.getElementById('cameraToggleButton');
 const cameraIcon = document.getElementById('cameraIcon');
 const micToggleButton = document.getElementById('micToggleButton');
 const micIcon = document.getElementById('micIcon');
+const screenShareButton = document.getElementById('screenShareButton');
+const screenShareIcon = document.getElementById('screenShareIcon');
 
 // Initialize PeerJS
 peer.on('open', id => {
@@ -151,6 +155,52 @@ micToggleButton.addEventListener('click', () => {
   }
 });
 
+// Toggle screen sharing on/off
+screenShareButton.addEventListener('click', async () => {
+    if (!isScreenSharing) {
+      try {
+        screenStream = await navigator.mediaDevices.getDisplayMedia({ video: true });
+        const videoTrack = screenStream.getVideoTracks()[0];
+        
+        // Replace local video track with screen track
+        const currentVideoTrack = localStream.getVideoTracks()[0];
+        if (currentVideoTrack) {
+          currentVideoTrack.stop();
+          localStream.removeTrack(currentVideoTrack);
+        }
+        localStream.addTrack(videoTrack);
+  
+        screenShareIcon.className = 'fas fa-desktop-slash'; // Update icon
+        screenShareIcon.title = 'Stop Screen Sharing'; // Update tooltip
+        isScreenSharing = true;
+  
+        // Notify peers about the screen share
+        socket.emit('screen-share-started', { roomId: currentRoom, userId: myPeerId });
+      } catch (error) {
+        console.error('Error sharing screen.', error);
+      }
+    } else {
+      // Stop screen sharing
+      const videoTrack = localStream.getVideoTracks().find(track => track.kind === 'video');
+      if (videoTrack) {
+        videoTrack.stop(); // Stop the screen share track
+      }
+      localStream.removeTrack(videoTrack); // Remove the screen share track
+  
+      // Re-enable the original video stream
+      localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+      addVideoStream(localStream, myPeerId, myUsername); // Add local stream back
+  
+      screenShareIcon.className = 'fas fa-desktop'; // Update icon
+      screenShareIcon.title = 'Share Screen'; // Update tooltip
+      isScreenSharing = false;
+  
+      // Notify peers that screen share has stopped
+      socket.emit('screen-share-stopped', { roomId: currentRoom, userId: myPeerId });
+    }
+  });
+  
+
 // Disconnect button logic
 disconnectButton.addEventListener('click', () => {
   if (localStream) {
@@ -254,6 +304,7 @@ fileInput.addEventListener('change', () => {
   }
 });
 
+// Display error messages
 function showError(message) {
   const error = document.getElementById('error');
   error.textContent = message;
