@@ -1,38 +1,45 @@
 /* styles.css */
-.video-container {
+
+/* Grid layout for videos */
+#video-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Responsive grid */
+    gap: 10px; /* Gap between videos */
+    justify-content: center;
+    margin-top: 20px;
+  }
+  
+  /* Video container styling */
+  .video-container {
     position: relative;
     width: 100%;
     max-width: 200px; /* Adjust the size as needed */
     height: 150px; /* Ensure a fixed height to maintain uniformity */
     margin: 5px;
     overflow: hidden; /* Ensure content doesn't overflow */
-  }
-  
-  video {
-    width: 100%;
-    height: 100%;
-    object-fit: cover; /* Ensure the video covers the container */
     border: 1px solid #ccc;
     border-radius: 8px;
   }
   
+  /* Video element styling */
+  video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Ensure the video covers the container */
+    border-radius: 8px;
+  }
+  
+  /* Username overlay styling */
   .username {
     position: absolute;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
+    background: rgba(0, 0, 0, 0.6);
     color: white;
     width: 100%;
     text-align: center;
-    padding: 2px;
+    padding: 4px;
+    font-size: 14px; /* Adjust font size as needed */
     border-bottom-left-radius: 8px;
     border-bottom-right-radius: 8px;
-  }
-  
-  /* Grid layout for videos */
-  #video-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr); /* 3 columns */
-    gap: 10px; /* Gap between videos */
-    justify-content: center;
   }
   

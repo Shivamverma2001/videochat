@@ -32,33 +32,40 @@ peer.on('call', call => {
   if (localStream) {
     call.answer(localStream);
     call.on('stream', remoteStream => {
-      addVideoStream(remoteStream, call.peer);
+      addVideoStream(remoteStream, call.peer, 'Remote User');
     });
   }
 });
 
 // Add video stream to the page
-function addVideoStream(stream, id) {
-  let video = document.getElementById(id);
-  if (!video) {
-    video = document.createElement('video');
-    video.id = id;
+function addVideoStream(stream, id, username) {
+  let videoContainer = document.getElementById(id);
+  if (!videoContainer) {
+    videoContainer = document.createElement('div');
+    videoContainer.id = id;
+    videoContainer.classList.add('video-container');
+
+    const video = document.createElement('video');
     video.autoplay = true;
     video.controls = false;
-    video.classList.add('video-container');
-    const container = document.createElement('div');
-    container.classList.add('video-container-wrapper');
-    container.appendChild(video);
-    videoGrid.appendChild(container);
+
+    const usernameOverlay = document.createElement('div');
+    usernameOverlay.classList.add('username');
+    usernameOverlay.textContent = username;
+
+    videoContainer.appendChild(video);
+    videoContainer.appendChild(usernameOverlay);
+    videoGrid.appendChild(videoContainer);
   }
-  video.srcObject = stream;
+
+  videoContainer.querySelector('video').srcObject = stream;
 }
 
 // Remove video stream from the page
 function removeVideoStream(id) {
-  const video = document.getElementById(id);
-  if (video) {
-    video.remove();
+  const videoContainer = document.getElementById(id);
+  if (videoContainer) {
+    videoContainer.remove();
   }
 }
 
@@ -70,7 +77,7 @@ startRoomButton.addEventListener('click', async () => {
   if (username && roomId) {
     try {
       localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-      addVideoStream(localStream, myPeerId);
+      addVideoStream(localStream, myPeerId, username); // Add local stream with username
       myUsername = username;
       currentRoom = roomId;
       isRoomCreator = true;
@@ -80,6 +87,8 @@ startRoomButton.addEventListener('click', async () => {
     } catch (error) {
       console.error('Error accessing media devices.', error);
     }
+  } else {
+    showError('Please enter both username and room name.');
   }
 });
 
@@ -91,7 +100,7 @@ joinRoomButton.addEventListener('click', async () => {
   if (username && roomId) {
     try {
       localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-      addVideoStream(localStream, myPeerId);
+      addVideoStream(localStream, myPeerId, username); // Add local stream with username
       myUsername = username;
       currentRoom = roomId;
       isRoomCreator = false;
@@ -101,6 +110,8 @@ joinRoomButton.addEventListener('click', async () => {
     } catch (error) {
       console.error('Error accessing media devices.', error);
     }
+  } else {
+    showError('Please enter both username and room name.');
   }
 });
 
@@ -110,7 +121,7 @@ disconnectButton.addEventListener('click', () => {
     localStream.getTracks().forEach(track => track.stop());
   }
   peer.destroy();
-  document.querySelectorAll('.video-container').forEach(video => video.remove());
+  document.querySelectorAll('.video-container').forEach(container => container.remove());
   socket.emit('end-room', currentRoom); // Inform server to close room
   disconnectButton.style.display = 'none';
   roomIdDisplay.textContent = '';
@@ -123,7 +134,7 @@ socket.on('user-connected', ({ userId, username }) => {
   if (localStream) {
     const call = peer.call(userId, localStream);
     call.on('stream', remoteStream => {
-      addVideoStream(remoteStream, userId);
+      addVideoStream(remoteStream, userId, username);
     });
   }
 });
@@ -144,7 +155,7 @@ socket.on('user-joined', ({ userId, username }) => {
   if (localStream) {
     const call = peer.call(userId, localStream);
     call.on('stream', remoteStream => {
-      addVideoStream(remoteStream, userId);
+      addVideoStream(remoteStream, userId, username);
     });
   }
 });
@@ -158,6 +169,20 @@ socket.on('user-disconnected', userId => {
 // Handle room closure
 socket.on('room-closed', () => {
   console.log('Room closed by creator');
-  document.querySelectorAll('.video-container').forEach(video => video.remove());
+  document.querySelectorAll('.video-container').forEach(container => container.remove());
   disconnectButton.style.display = 'none';
+});
+
+// Handle room not found error
+socket.on('room-not-found', ({ roomId }) => {
+  console.log(`Room not found: ${roomId}`);
+  showError('Room not found. Please check the room name.');
+  // Remove local stream if room not found
+  if (localStream) {
+    localStream.getTracks().forEach(track => track.stop());
+  }
+  document.querySelectorAll('.video-container').forEach(container => container.remove());
+  disconnectButton.style.display = 'none';
+  roomIdDisplay.textContent = '';
+  userIdDisplay.textContent = '';
 });
