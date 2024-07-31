@@ -2,37 +2,45 @@
 h1 {
     text-align: center;
     margin-top: 20px;
-  }
-  
-  /* Container for video and chat sections */
-  .main-container {
+}
+
+/* Container for video and chat sections */
+.main-container {
     display: flex;
     height: 100vh;
-  }
-  
-  /* Video container styling */
-  .video-container-wrapper {
+}
+
+/* Video container styling */
+.video-container-wrapper {
     flex: 1;
     padding: 10px;
     background-color: #f0f0f0;
-  }
-  
-  /* Chat container styling */
-  .chat-container-wrapper {
+}
+
+/* Chat container styling */
+.chat-container-wrapper {
     flex: 0 0 30%;
-  }
-  
-  /* Grid layout for videos */
-  #video-grid {
+}
+
+/* Button row styling */
+.button-row {
+    display: flex;
+    justify-content: center;
+    gap: 10px; /* Gap between buttons */
+    margin-top: 20px;
+}
+
+/* Grid layout for videos */
+#video-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Responsive grid */
     gap: 10px; /* Gap between videos */
     justify-content: center;
     margin-top: 20px;
-  }
-  
-  /* Video container styling */
-  .video-container {
+}
+
+/* Video container styling */
+.video-container {
     position: relative;
     width: 100%;
     max-width: 200px; /* Adjust the size as needed */
@@ -41,18 +49,18 @@ h1 {
     overflow: hidden; /* Ensure content doesn't overflow */
     border: 1px solid #ccc;
     border-radius: 8px;
-  }
-  
-  /* Video element styling */
-  video {
+}
+
+/* Video element styling */
+video {
     width: 100%;
     height: 100%;
     object-fit: cover; /* Ensure the video covers the container */
     border-radius: 8px;
-  }
-  
-  /* Username overlay styling */
-  .username {
+}
+
+/* Username overlay styling */
+.username {
     position: absolute;
     bottom: 0;
     background: rgba(0, 0, 0, 0.6);
@@ -63,10 +71,10 @@ h1 {
     font-size: 14px; /* Adjust font size as needed */
     border-bottom-left-radius: 8px;
     border-bottom-right-radius: 8px;
-  }
-  
-  /* Chat section styling */
-  #chat-section {
+}
+
+/* Chat section styling */
+#chat-section {
     position: fixed;
     right: 0;
     top: 0;
@@ -79,33 +87,33 @@ h1 {
     padding: 10px;
     box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
     overflow: hidden; /* Prevents overflow from causing scrollbars */
-  }
-  
-  /* Chat messages container */
-  #chat-messages {
+}
+
+/* Chat messages container */
+#chat-messages {
     flex: 1;
     overflow-y: auto;
     margin-bottom: 10px;
-  }
-  
-  /* Chat input container styling */
-  #chat-input-container {
+}
+
+/* Chat input container styling */
+#chat-input-container {
     display: flex;
     align-items: center;
     border-top: 1px solid #ddd;
     padding-top: 10px;
-  }
-  
-  /* Chat input styling */
-  #chatInput {
+}
+
+/* Chat input styling */
+#chatInput {
     flex: 1;
     padding: 5px;
     border: 1px solid #ddd;
     border-radius: 4px;
-  }
-  
-  /* Send button styling */
-  #sendButton {
+}
+
+/* Send button styling */
+#sendButton {
     margin-left: 10px;
     padding: 5px 10px;
     background-color: #007bff;
@@ -113,51 +121,56 @@ h1 {
     border: none;
     border-radius: 4px;
     cursor: pointer;
-  }
-  
-  #sendButton:hover {
+}
+
+#sendButton:hover {
     background-color: #0056b3;
-  }
-  
-  /* Responsive design for input fields */
-  .form-group {
+}
+
+/* Responsive design for input fields */
+.form-group {
     display: flex;
     justify-content: center;
     margin-bottom: 20px;
-  }
-  
-  .form-group input {
+}
+
+.form-group input {
     max-width: calc(90% / 2 - 10px); /* Combined width of both inputs (70%) minus margin */
     margin-right: 10px; /* Space between inputs */
     margin-top: 30px;
-  }
-  
-  .form-group input:last-child {
+}
+
+.form-group input:last-child {
     margin-right: 0; /* No margin on the last input */
-  }
- /* Style for the file input label */
+}
+
+/* Style for the file input label */
 .file-input-label {
     display: inline-block;
     cursor: pointer;
     margin-left: 10px;
     margin-right: 5px;
     margin-top: 6px;
-  }
+}
 
-  .file-input-icon {
+.file-input-icon {
     font-size: 24px; /* Adjust size if needed */
     color: #007bff; /* Adjust color if needed */
-  }
-  
-  /* Hide the actual file input */
-  .file-input {
+}
+
+/* Hide the actual file input */
+.file-input {
     display: none;
-  }
-  .button-row .btn {
-    margin-right: 10px; /* Adjust the spacing between buttons */
-  }
-  
-  /* Remove margin for the last button */
-  .button-row .btn:last-child {
-    margin-right: 0;
-  }
+}
+
+/* Mic toggle button styling */
+#micToggleButton {
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+#micIcon {
+    font-size: 24px; /* Adjust size if needed */
+    color: #333; /* Adjust color if needed */
+}

@@ -19,13 +19,16 @@
           <input type="text" id="roomInput" class="form-control" placeholder="Enter room name">
         </div>
         <div class="button-row mb-3">
-            <button id="startRoomButton" class="btn btn-primary">Start Room</button>
-            <button id="joinRoomButton" class="btn btn-secondary">Join Room</button>
-            <button id="disconnectButton" class="btn btn-danger">End Call</button>
-            <button id="cameraToggleButton" class="btn btn-secondary">
-              <i id="cameraIcon" class="fas fa-video"></i>
-            </button>
-          </div>
+          <button id="startRoomButton" class="btn btn-primary">Start Room</button>
+          <button id="joinRoomButton" class="btn btn-secondary">Join Room</button>
+          <button id="disconnectButton" class="btn btn-danger" style="display:none;">End Call</button>
+          <button id="cameraToggleButton" class="btn btn-secondary">
+            <i id="cameraIcon" class="fas fa-video"></i>
+          </button>
+          <button id="micToggleButton" class="btn btn-secondary">
+            <i id="micIcon" class="fas fa-microphone"></i>
+          </button>
+        </div>
         <div id="roomIdDisplay"></div>
         <div id="userIdDisplay"></div>
         <div id="video-grid"></div>

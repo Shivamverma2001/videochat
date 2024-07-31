@@ -11,6 +11,7 @@ let myUsername;
 let currentRoom;
 let isRoomCreator = false;
 let isCameraOn = true; // Track camera state
+let isMicOn = true; // Track mic state
 
 // Elements
 const usernameInput = document.getElementById('usernameInput');
@@ -27,6 +28,8 @@ const fileInput = document.getElementById('fileInput');
 const chatMessages = document.getElementById('chat-messages');
 const cameraToggleButton = document.getElementById('cameraToggleButton');
 const cameraIcon = document.getElementById('cameraIcon');
+const micToggleButton = document.getElementById('micToggleButton');
+const micIcon = document.getElementById('micIcon');
 
 // Initialize PeerJS
 peer.on('open', id => {
@@ -132,6 +135,18 @@ cameraToggleButton.addEventListener('click', () => {
       isCameraOn = !isCameraOn;
       videoTrack.enabled = isCameraOn;
       cameraIcon.className = isCameraOn ? 'fas fa-video' : 'fas fa-video-slash';
+    }
+  }
+});
+
+// Toggle mic on/off
+micToggleButton.addEventListener('click', () => {
+  if (localStream) {
+    const audioTrack = localStream.getAudioTracks()[0];
+    if (audioTrack) {
+      isMicOn = !isMicOn;
+      audioTrack.enabled = isMicOn;
+      micIcon.className = isMicOn ? 'fas fa-microphone' : 'fas fa-microphone-slash';
     }
   }
 });
