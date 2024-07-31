@@ -10,6 +10,7 @@ let myPeerId;
 let myUsername;
 let currentRoom;
 let isRoomCreator = false;
+let isCameraOn = true; // Track camera state
 
 // Elements
 const usernameInput = document.getElementById('usernameInput');
@@ -24,6 +25,8 @@ const chatInput = document.getElementById('chatInput');
 const sendButton = document.getElementById('sendButton');
 const fileInput = document.getElementById('fileInput');
 const chatMessages = document.getElementById('chat-messages');
+const cameraToggleButton = document.getElementById('cameraToggleButton');
+const cameraIcon = document.getElementById('cameraIcon');
 
 // Initialize PeerJS
 peer.on('open', id => {
@@ -118,6 +121,18 @@ joinRoomButton.addEventListener('click', async () => {
     }
   } else {
     showError('Please enter both username and room name.');
+  }
+});
+
+// Toggle camera on/off
+cameraToggleButton.addEventListener('click', () => {
+  if (localStream) {
+    const videoTrack = localStream.getVideoTracks()[0];
+    if (videoTrack) {
+      isCameraOn = !isCameraOn;
+      videoTrack.enabled = isCameraOn;
+      cameraIcon.className = isCameraOn ? 'fas fa-video' : 'fas fa-video-slash';
+    }
   }
 });
 

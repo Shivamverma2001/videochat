@@ -153,4 +153,11 @@ h1 {
   .file-input {
     display: none;
   }
+  .button-row .btn {
+    margin-right: 10px; /* Adjust the spacing between buttons */
+  }
   
+  /* Remove margin for the last button */
+  .button-row .btn:last-child {
+    margin-right: 0;
+  }
