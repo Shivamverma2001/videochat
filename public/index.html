@@ -5,18 +5,35 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Video Chat Application</title>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <link rel="stylesheet" href="styles.css"> <!-- Link to external CSS -->
   <style>
     #video-grid {
       display: flex;
-      flex-direction: column;
-      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
       margin-top: 20px;
+    }
+    .video-container {
+      position: relative;
+      width: 100%;
+      max-width: 200px; /* Adjust based on your design */
     }
     video {
       width: 100%;
-      max-width: 600px;
       border: 1px solid #ccc;
-      margin-bottom: 10px;
+      border-radius: 8px;
+    }
+    .disconnect-button {
+      position: absolute;
+      top: 0;
+      right: 0;
+      background-color: red;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 0 8px 0 0;
+      cursor: pointer;
     }
   </style>
 </head>
@@ -28,6 +45,7 @@
       <input type="text" id="roomInput" class="form-control mt-2" placeholder="Enter room name">
       <button id="startRoomButton" class="btn btn-primary mt-2">Start Room</button>
       <button id="joinRoomButton" class="btn btn-secondary mt-2">Join Room</button>
+      <button id="disconnectButton" class="btn btn-danger mt-2" style="display:none;">End Call</button>
     </div>
     <div id="roomIdDisplay"></div>
     <div id="userIdDisplay"></div>

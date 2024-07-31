@@ -38,6 +38,7 @@ io.on('connection', socket => {
       socket.to(roomId).emit('user-connected', { userId: socket.id, username });
     } else {
       console.log(`Room not found: ${roomId} for user: ${username}`);
+      socket.emit('room-not-found', { roomId });
     }
   });
 
@@ -45,6 +46,22 @@ io.on('connection', socket => {
     if (rooms[roomId]) {
       rooms[roomId].users[userId] = username;
       socket.to(roomId).emit('user-joined', { userId, username });
+    }
+  });
+
+  socket.on('end-room', roomId => {
+    console.log(`Room closed: ${roomId}`);
+    if (rooms[roomId]) {
+      io.to(roomId).emit('room-closed'); // Notify all users in the room
+      delete rooms[roomId];
+    }
+  });
+
+  socket.on('leave-room', roomId => {
+    console.log(`User left room: ${roomId}`);
+    if (rooms[roomId]) {
+      delete rooms[roomId].users[socket.id];
+      socket.to(roomId).emit('user-disconnected', socket.id);
     }
   });
 

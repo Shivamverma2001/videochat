@@ -1,18 +1,38 @@
-body {
-    background-color: #f8f9fa;
-}
-#video-grid {
-    display: flex;
-    flex-direction: column; /* or 'row' for horizontal */
-    align-items: center;
-    margin-top: 20px;
+/* styles.css */
+.video-container {
+    position: relative;
+    width: 100%;
+    max-width: 200px; /* Adjust the size as needed */
+    height: 150px; /* Ensure a fixed height to maintain uniformity */
+    margin: 5px;
+    overflow: hidden; /* Ensure content doesn't overflow */
   }
   
   video {
     width: 100%;
-    max-width: 600px;
+    height: 100%;
+    object-fit: cover; /* Ensure the video covers the container */
     border: 1px solid #ccc;
-    margin-bottom: 10px;
-    border-radius: 8px; /* Optional: for rounded corners */
+    border-radius: 8px;
+  }
+  
+  .username {
+    position: absolute;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+    width: 100%;
+    text-align: center;
+    padding: 2px;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+  }
+  
+  /* Grid layout for videos */
+  #video-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* 3 columns */
+    gap: 10px; /* Gap between videos */
+    justify-content: center;
   }
   
