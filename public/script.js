@@ -1,85 +1,121 @@
-// Connect to the main server using Socket.IO
 const socket = io();
-
 const peer = new Peer(undefined, {
-  host: 'localhost',
-  port: 3001,
-  path: '/peerjs'
+  host: '/',
+  port: '3001',
+  path: '/peerjs',
 });
 
-// Elements
+let localStream;
+let myPeerId;
+let myUsername;
+let currentRoom;
+
+const usernameInput = document.getElementById('usernameInput');
+const roomInput = document.getElementById('roomInput');
 const startRoomButton = document.getElementById('startRoomButton');
 const joinRoomButton = document.getElementById('joinRoomButton');
-const roomInput = document.getElementById('roomInput');
-const usernameInput = document.getElementById('usernameInput');
+const roomIdDisplay = document.getElementById('roomIdDisplay');
+const userIdDisplay = document.getElementById('userIdDisplay');
 const videoGrid = document.getElementById('video-grid');
 
-let myPeerId;
-let myStream;
-
-// Get user's media
-navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then(stream => {
-  myStream = stream;
-  // Display own video
-  const video = document.createElement('video');
-  video.srcObject = stream;
-  video.play();
-  videoGrid.append(video);
-
-  peer.on('call', call => {
-    call.answer(stream); // Answer the call with the local stream
-    const video = document.createElement('video');
-    call.on('stream', remoteStream => {
-      video.srcObject = remoteStream;
-      video.play();
-      videoGrid.append(video);
-    });
-  });
-});
-
+// Initialize PeerJS
 peer.on('open', id => {
   myPeerId = id;
-  console.log('My peer ID is: ', id);
+  userIdDisplay.textContent = `Your ID: ${myPeerId}`;
 });
 
-startRoomButton.addEventListener('click', () => {
-  const roomId = roomInput.value;
-  const userId = myPeerId;
-  if (roomId) {
-    socket.emit('start-room', roomId, userId);
-    console.log(`Room started: ${roomId} by user: ${userId}`);
-  }
-});
-
-joinRoomButton.addEventListener('click', () => {
-  const roomId = roomInput.value;
-  const userId = myPeerId;
-  if (roomId) {
-    socket.emit('join-room', roomId, userId);
-    console.log(`User joined room: ${roomId} - user: ${userId}`);
-  }
-});
-
-socket.on('room-joined', roomId => {
-  console.log(`Successfully joined room: ${roomId}`);
-});
-
-socket.on('user-connected', userId => {
-  console.log(`User connected: ${userId}`);
-  const call = peer.call(userId, myStream);
+// Handle incoming calls
+peer.on('call', call => {
+  call.answer(localStream);
   call.on('stream', remoteStream => {
-    const video = document.createElement('video');
-    video.srcObject = remoteStream;
-    video.play();
-    videoGrid.append(video);
+    addVideoStream(remoteStream, call.peer);
   });
 });
 
-socket.on('user-disconnected', userId => {
-  console.log(`User disconnected: ${userId}`);
-  // Handle user disconnection if needed
+// Add video stream to the page
+function addVideoStream(stream, id) {
+  let video = document.getElementById(id);
+  if (!video) {
+    video = document.createElement('video');
+    video.id = id;
+    video.autoplay = true;
+    video.controls = false;
+    videoGrid.appendChild(video);
+  }
+  video.srcObject = stream;
+}
+
+// Start a new room
+startRoomButton.addEventListener('click', async () => {
+  const username = usernameInput.value;
+  const roomId = roomInput.value;
+
+  if (username && roomId) {
+    try {
+      localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+      addVideoStream(localStream, myPeerId); 
+      myUsername = username;
+      currentRoom = roomId;
+      socket.emit('start-room', { roomId, username });
+      roomIdDisplay.textContent = `Room ID: ${roomId}`;
+    } catch (error) {
+      console.error('Error accessing media devices.', error);
+    }
+  }
 });
 
-socket.on('room-not-found', () => {
-  console.log('Room not found');
+// Join an existing room
+joinRoomButton.addEventListener('click', async () => {
+  const username = usernameInput.value;
+  const roomId = roomInput.value;
+
+  if (username && roomId) {
+    try {
+      localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+      addVideoStream(localStream, myPeerId); 
+      myUsername = username;
+      currentRoom = roomId;
+      socket.emit('join-room', { roomId, username });
+      roomIdDisplay.textContent = `Room ID: ${roomId}`;
+    } catch (error) {
+      console.error('Error accessing media devices.', error);
+    }
+  }
+});
+
+// Handle new user connections
+socket.on('user-connected', ({ userId, username }) => {
+  console.log(`${username} connected with ID ${userId}`);
+  const call = peer.call(userId, localStream);
+  call.on('stream', remoteStream => {
+    addVideoStream(remoteStream, userId); 
+  });
+});
+
+// Handle room creation and joining
+socket.on('room-started', ({ roomId, username }) => {
+  console.log(`Room ${roomId} started by ${username}`);
+});
+
+socket.on('room-joined', ({ roomId, username }) => {
+  console.log(`Joined room ${roomId} successfully. Room creator: ${username}`);
+  socket.emit('user-joined', { roomId, username, userId: myPeerId });
+});
+
+// Handle new user joined event
+socket.on('user-joined', ({ userId, username }) => {
+  console.log(`${username} joined room with ID ${userId}`);
+  const call = peer.call(userId, localStream);
+  call.on('stream', remoteStream => {
+    addVideoStream(remoteStream, userId);
+  });
+});
+
+// Handle user disconnections
+socket.on('user-disconnected', userId => {
+  console.log(`User disconnected: ${userId}`);
+  const video = document.getElementById(userId);
+  if (video) {
+    video.remove();
+  }
 });

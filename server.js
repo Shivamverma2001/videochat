@@ -1,59 +1,67 @@
 const express = require('express');
 const http = require('http');
-const socketIo = require('socket.io');
-const path = require('path');
+const socketIO = require('socket.io');
+const { ExpressPeerServer } = require('peer');
 
 const app = express();
 const server = http.createServer(app);
-const io = socketIo(server);
+const io = socketIO(server);
 
-// Serve static files from the "public" directory
-app.use(express.static(path.join(__dirname, 'public')));
+const peerServer = ExpressPeerServer(server, {
+  debug: true,
+  path: '/peerjs'
+});
 
-const rooms = {}; // Track rooms and their users
+app.use('/peerjs', peerServer);
+
+const rooms = {};
 
 io.on('connection', socket => {
   console.log(`User connected: ${socket.id}`);
 
-  socket.on('start-room', (roomId, userId) => {
+  socket.on('start-room', ({ roomId, username }) => {
     if (!rooms[roomId]) {
-      rooms[roomId] = [];
+      rooms[roomId] = { users: {} };
     }
-    rooms[roomId].push(userId);
+    rooms[roomId].users[socket.id] = username;
     socket.join(roomId);
-    console.log(`Room started: ${roomId} by user: ${userId}`);
-    socket.emit('room-joined', roomId);
-    socket.to(roomId).emit('user-connected', userId); // Broadcast to the room
+    console.log(`Room started: ${roomId} by user: ${username}`);
+    socket.emit('room-started', { roomId, username });
   });
 
-  socket.on('join-room', (roomId, userId) => {
+  socket.on('join-room', ({ roomId, username }) => {
     if (rooms[roomId]) {
-      rooms[roomId].push(userId);
+      rooms[roomId].users[socket.id] = username;
       socket.join(roomId);
-      console.log(`User joined room: ${roomId} - user: ${userId}`);
-      socket.emit('room-joined', roomId);
-      socket.to(roomId).emit('user-connected', userId); // Broadcast to the room
+      console.log(`User ${username} joined room: ${roomId}`);
+      socket.emit('room-joined', { roomId, username });
+      socket.to(roomId).emit('user-connected', { userId: socket.id, username });
     } else {
-      console.log(`Room not found: ${roomId} for user: ${userId}`);
-      socket.emit('room-not-found');
+      console.log(`Room not found: ${roomId} for user: ${username}`);
+    }
+  });
+
+  socket.on('user-joined', ({ roomId, username, userId }) => {
+    if (rooms[roomId]) {
+      rooms[roomId].users[userId] = username;
+      socket.to(roomId).emit('user-joined', { userId, username });
     }
   });
 
   socket.on('disconnect', () => {
-    for (let roomId in rooms) {
-      if (rooms[roomId].includes(socket.id)) {
-        rooms[roomId] = rooms[roomId].filter(id => id !== socket.id);
-        console.log(`User disconnected: ${socket.id} from room: ${roomId}`);
+    console.log(`User disconnected: ${socket.id}`);
+    for (const roomId in rooms) {
+      if (rooms[roomId].users[socket.id]) {
+        delete rooms[roomId].users[socket.id];
         socket.to(roomId).emit('user-disconnected', socket.id);
-        if (rooms[roomId].length === 0) {
-          delete rooms[roomId];
-        }
       }
     }
   });
 });
 
-const PORT = process.env.PORT || 3000;
+app.use(express.static('public'));
+
+const PORT = 3000;
 server.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
