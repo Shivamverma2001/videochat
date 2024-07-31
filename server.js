@@ -74,6 +74,11 @@ io.on('connection', socket => {
       }
     }
   });
+
+  // Handle chat messages
+  socket.on('chat-message', ({ message, username, roomId }) => {
+    io.to(roomId).emit('chat-message', { message, username });
+  });
 });
 
 app.use(express.static('public'));

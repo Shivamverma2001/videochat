@@ -20,6 +20,9 @@ const disconnectButton = document.getElementById('disconnectButton');
 const roomIdDisplay = document.getElementById('roomIdDisplay');
 const userIdDisplay = document.getElementById('userIdDisplay');
 const videoGrid = document.getElementById('video-grid');
+const chatInput = document.getElementById('chatInput');
+const sendButton = document.getElementById('sendButton');
+const chatMessages = document.getElementById('chat-messages');
 
 // Initialize PeerJS
 peer.on('open', id => {
@@ -84,6 +87,7 @@ startRoomButton.addEventListener('click', async () => {
       socket.emit('start-room', { roomId, username });
       roomIdDisplay.textContent = `Room ID: ${roomId}`;
       disconnectButton.style.display = 'block';
+      document.getElementById('chat-section').style.display = 'block'; // Show chat section
     } catch (error) {
       console.error('Error accessing media devices.', error);
     }
@@ -107,6 +111,7 @@ joinRoomButton.addEventListener('click', async () => {
       socket.emit('join-room', { roomId, username });
       roomIdDisplay.textContent = `Room ID: ${roomId}`;
       disconnectButton.style.display = 'block';
+      document.getElementById('chat-section').style.display = 'block'; // Show chat section
     } catch (error) {
       console.error('Error accessing media devices.', error);
     }
@@ -126,6 +131,7 @@ disconnectButton.addEventListener('click', () => {
   disconnectButton.style.display = 'none';
   roomIdDisplay.textContent = '';
   userIdDisplay.textContent = '';
+  document.getElementById('chat-section').style.display = 'none'; // Hide chat section
 });
 
 // Handle new user connections
@@ -168,21 +174,33 @@ socket.on('user-disconnected', userId => {
 
 // Handle room closure
 socket.on('room-closed', () => {
-  console.log('Room closed by creator');
-  document.querySelectorAll('.video-container').forEach(container => container.remove());
-  disconnectButton.style.display = 'none';
-});
-
-// Handle room not found error
-socket.on('room-not-found', ({ roomId }) => {
-  console.log(`Room not found: ${roomId}`);
-  showError('Room not found. Please check the room name.');
-  // Remove local stream if room not found
-  if (localStream) {
-    localStream.getTracks().forEach(track => track.stop());
-  }
+  console.log('Room has been closed.');
   document.querySelectorAll('.video-container').forEach(container => container.remove());
   disconnectButton.style.display = 'none';
   roomIdDisplay.textContent = '';
   userIdDisplay.textContent = '';
+  document.getElementById('chat-section').style.display = 'none'; // Hide chat section
 });
+
+// Handle chat messages
+socket.on('chat-message', ({ message, username }) => {
+  const chatMessage = document.createElement('div');
+  chatMessage.classList.add('chat-message');
+  chatMessage.textContent = `${username}: ${message}`;
+  chatMessages.appendChild(chatMessage);
+});
+
+// Send chat messages
+sendButton.addEventListener('click', () => {
+  const message = chatInput.value;
+  if (message) {
+    socket.emit('chat-message', { message, username: myUsername, roomId: currentRoom });
+    chatInput.value = '';
+  }
+});
+
+function showError(message) {
+  const error = document.getElementById('error');
+  error.textContent = message;
+  error.style.display = 'block';
+}

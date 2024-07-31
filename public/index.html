@@ -6,6 +6,36 @@
   <title>Video Chat Application</title>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
   <link rel="stylesheet" href="style.css"> <!-- Link to external CSS -->
+  <style>
+    /* Chat section styling */
+    #chat-section {
+      position: fixed;
+      right: 0;
+      top: 0;
+      width: 30%;
+      height: 100%;
+      background-color: #f8f9fa;
+      border-left: 1px solid #ddd;
+      display: flex;
+      flex-direction: column;
+      padding: 10px;
+    }
+
+    #chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      margin-bottom: 10px;
+    }
+
+    #chat-input-container {
+      display: flex;
+    }
+
+    #chatInput {
+      flex: 1;
+      margin-right: 10px;
+    }
+  </style>
 </head>
 <body>
   <div class="container">
@@ -21,6 +51,15 @@
     <div id="userIdDisplay"></div>
     <div id="video-grid"></div>
   </div>
+
+  <div id="chat-section">
+    <div id="chat-messages"></div>
+    <div id="chat-input-container">
+      <input type="text" id="chatInput" class="form-control" placeholder="Type a message">
+      <button id="sendButton" class="btn btn-primary ml-2">Send</button>
+    </div>
+  </div>
+
   <script src="/socket.io/socket.io.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/peerjs@1.3.2/dist/peerjs.min.js"></script>
   <script src="script.js"></script>

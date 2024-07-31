@@ -1,5 +1,3 @@
-/* styles.css */
-
 /* Grid layout for videos */
 #video-grid {
     display: grid;
@@ -7,6 +5,8 @@
     gap: 10px; /* Gap between videos */
     justify-content: center;
     margin-top: 20px;
+    /* Adjust the height to ensure it fits well alongside the chat section */
+    padding-right: 30%; /* Leave space for the chat section */
   }
   
   /* Video container styling */
@@ -41,5 +41,35 @@
     font-size: 14px; /* Adjust font size as needed */
     border-bottom-left-radius: 8px;
     border-bottom-right-radius: 8px;
+  }
+  
+  /* Chat section styling */
+  #chat-section {
+    position: fixed;
+    right: 0;
+    top: 0;
+    width: 30%;
+    height: 100%;
+    background-color: #f8f9fa;
+    border-left: 1px solid #ddd;
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
+  }
+  
+  #chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    margin-bottom: 10px;
+  }
+  
+  #chat-input-container {
+    display: flex;
+  }
+  
+  #chatInput {
+    flex: 1;
+    margin-right: 10px;
   }
   
