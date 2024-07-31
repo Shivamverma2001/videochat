@@ -22,6 +22,7 @@ const userIdDisplay = document.getElementById('userIdDisplay');
 const videoGrid = document.getElementById('video-grid');
 const chatInput = document.getElementById('chatInput');
 const sendButton = document.getElementById('sendButton');
+const fileInput = document.getElementById('fileInput');
 const chatMessages = document.getElementById('chat-messages');
 
 // Initialize PeerJS
@@ -190,12 +191,36 @@ socket.on('chat-message', ({ message, username }) => {
   chatMessages.appendChild(chatMessage);
 });
 
+// Handle file messages
+socket.on('file-message', ({ filename, fileData, username }) => {
+  const link = document.createElement('a');
+  link.href = fileData;
+  link.download = filename;
+  link.textContent = `${username} shared a file: ${filename}`;
+  chatMessages.appendChild(link);
+  chatMessages.appendChild(document.createElement('br'));
+});
+
 // Send chat messages
 sendButton.addEventListener('click', () => {
   const message = chatInput.value;
   if (message) {
     socket.emit('chat-message', { message, username: myUsername, roomId: currentRoom });
     chatInput.value = '';
+  }
+});
+
+// Send files
+fileInput.addEventListener('change', () => {
+  const file = fileInput.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const data = reader.result;
+      socket.emit('file-message', { filename: file.name, fileData: data, username: myUsername });
+    };
+    reader.readAsDataURL(file);
+    fileInput.value = ''; // Clear file input after sending
   }
 });
 

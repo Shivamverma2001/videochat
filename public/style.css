@@ -135,4 +135,22 @@ h1 {
   .form-group input:last-child {
     margin-right: 0; /* No margin on the last input */
   }
+ /* Style for the file input label */
+.file-input-label {
+    display: inline-block;
+    cursor: pointer;
+    margin-left: 10px;
+    margin-right: 5px;
+    margin-top: 6px;
+  }
+
+  .file-input-icon {
+    font-size: 24px; /* Adjust size if needed */
+    color: #007bff; /* Adjust color if needed */
+  }
+  
+  /* Hide the actual file input */
+  .file-input {
+    display: none;
+  }
   
