@@ -1,58 +1,85 @@
-const socket = io('/');
-const videoGrid = document.getElementById('video-grid');
-const myPeer = new Peer(undefined, {
-  host: '/',
-  port: '3001'
+// Connect to the main server using Socket.IO
+const socket = io();
+
+const peer = new Peer(undefined, {
+  host: 'localhost',
+  port: 3001,
+  path: '/peerjs'
 });
-const myVideo = document.createElement('video');
-myVideo.muted = true;
-const peers = {};
 
-navigator.mediaDevices.getUserMedia({
-  video: true,
-  audio: true
-}).then(stream => {
-  addVideoStream(myVideo, stream);
+// Elements
+const startRoomButton = document.getElementById('startRoomButton');
+const joinRoomButton = document.getElementById('joinRoomButton');
+const roomInput = document.getElementById('roomInput');
+const usernameInput = document.getElementById('usernameInput');
+const videoGrid = document.getElementById('video-grid');
 
-  myPeer.on('call', call => {
-    call.answer(stream);
+let myPeerId;
+let myStream;
+
+// Get user's media
+navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then(stream => {
+  myStream = stream;
+  // Display own video
+  const video = document.createElement('video');
+  video.srcObject = stream;
+  video.play();
+  videoGrid.append(video);
+
+  peer.on('call', call => {
+    call.answer(stream); // Answer the call with the local stream
     const video = document.createElement('video');
-    call.on('stream', userVideoStream => {
-      addVideoStream(video, userVideoStream);
+    call.on('stream', remoteStream => {
+      video.srcObject = remoteStream;
+      video.play();
+      videoGrid.append(video);
     });
   });
+});
 
-  socket.on('user-connected', userId => {
-    connectToNewUser(userId, stream);
+peer.on('open', id => {
+  myPeerId = id;
+  console.log('My peer ID is: ', id);
+});
+
+startRoomButton.addEventListener('click', () => {
+  const roomId = roomInput.value;
+  const userId = myPeerId;
+  if (roomId) {
+    socket.emit('start-room', roomId, userId);
+    console.log(`Room started: ${roomId} by user: ${userId}`);
+  }
+});
+
+joinRoomButton.addEventListener('click', () => {
+  const roomId = roomInput.value;
+  const userId = myPeerId;
+  if (roomId) {
+    socket.emit('join-room', roomId, userId);
+    console.log(`User joined room: ${roomId} - user: ${userId}`);
+  }
+});
+
+socket.on('room-joined', roomId => {
+  console.log(`Successfully joined room: ${roomId}`);
+});
+
+socket.on('user-connected', userId => {
+  console.log(`User connected: ${userId}`);
+  const call = peer.call(userId, myStream);
+  call.on('stream', remoteStream => {
+    const video = document.createElement('video');
+    video.srcObject = remoteStream;
+    video.play();
+    videoGrid.append(video);
   });
 });
 
 socket.on('user-disconnected', userId => {
-  if (peers[userId]) peers[userId].close();
+  console.log(`User disconnected: ${userId}`);
+  // Handle user disconnection if needed
 });
 
-myPeer.on('open', id => {
-  const roomId = prompt("Enter room ID:");
-  socket.emit('join-room', roomId, id);
+socket.on('room-not-found', () => {
+  console.log('Room not found');
 });
-
-function connectToNewUser(userId, stream) {
-  const call = myPeer.call(userId, stream);
-  const video = document.createElement('video');
-  call.on('stream', userVideoStream => {
-    addVideoStream(video, userVideoStream);
-  });
-  call.on('close', () => {
-    video.remove();
-  });
-
-  peers[userId] = call;
-}
-
-function addVideoStream(video, stream) {
-  video.srcObject = stream;
-  video.addEventListener('loadedmetadata', () => {
-    video.play();
-  });
-  videoGrid.append(video);
-}
