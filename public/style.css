@@ -1,0 +1,10 @@
+body {
+    background-color: #f8f9fa;
+  }
+  
+  video {
+    width: 100%;
+    height: auto;
+    border: 1px solid #dee2e6;
+  }
+  
